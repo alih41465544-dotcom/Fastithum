@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="com.fastithum.app" version="1.0.0"
+    xmlns="http://www.w3.org/ns/widgets"
+    xmlns:cdv="http://cordova.apache.org/ns/1.0"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <name>Fasti Thum</name>
+    <description>Thumbnail Maker App</description>
+    <author email="you@example.com" href="https://github.com/">Fasti</author>
+    <content src="index.html" />
+    <access origin="*" />
+    <allow-navigation href="*" />
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+    <preference name="Orientation" value="default" />
+    <preference name="MixedContentMode" value="0" />
+    <preference name="loadUrlTimeoutValue" value="60000" />
+    <preference name="AndroidPersistentFileLocation" value="Compatibility" />
+    <platform name="android">
+        <allow-intent href="market:*" />
+        <preference name="android-minSdkVersion" value="24" />
+        <!-- targetSdkVersion 28 = legacy storage mode, পুরনো gallery plugin এতে ঠিকভাবে কাজ করে -->
+        <preference name="android-targetSdkVersion" value="28" />
+        <preference name="android-compileSdkVersion" value="35" />
+        <preference name="android-buildToolsVersion" value="36.0.0" />
+        <edit-config target="/manifest/application" file="AndroidManifest.xml" mode="merge">
+            <application android:requestLegacyExternalStorage="true" />
+        </edit-config>
+        <config-file target="AndroidManifest.xml" parent="/*">
+            <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+            <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+        </config-file>
+    </platform>
+</widget>
