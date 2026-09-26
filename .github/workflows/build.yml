@@ -1,0 +1,52 @@
+name: Build APK
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install Android SDK Platforms
+        run: | yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-35" "build-tools;36.0.0" 
+      - name: Install Cordova
+        run: npm install -g cordova
+
+      - name: Create Cordova project
+        run: | cordova create app com.fastithum.app FastiThum cp config.xml app/config.xml rm -rf app/www cp -r www app/www 
+      - name: Add Android platform
+        working-directory: app
+        run: cordova platform add android@15.1.0
+
+      - name: Install ALL required plugins
+        working-directory: app
+        run: | cordova plugin add cordova-plugin-file cordova plugin add cordova-plugin-android-permissions cordova plugin add @tanyijia/cordova-save-image-gallery 
+      - name: Build APK
+        working-directory: app
+        run: cordova build android --debug
+
+      - name: Find APK
+        id: findapk
+        run: echo "apk_path=$(find "$GITHUB_WORKSPACE" -name '*.apk' | head -n 1)" >> "$GITHUB_OUTPUT"
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: fasti-thum-apk
+          path: ${{ steps.findapk.outputs.apk_path }}
+          if-no-files-found: warn
